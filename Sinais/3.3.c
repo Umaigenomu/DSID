@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <unistd.h>
 int count = 0; /* counter for the number of ^C events handled */
-main(void)
+int main(void)
 /*
 ** Listing3.3.c -Tratando o sinal ativado pelo keyboard atraves de ctrl+c (^C)
 */
@@ -13,13 +13,13 @@ void control_C();
 signal(SIGINT, control_C);
 while(count < 3) {
 /* tell interactive user what to do */
-printf(“\n\tType a ^C when ready...”);
+printf("\n\tInsira um ^C (ctrl+c) quando quiser...");
 fflush(stdout);
 pause();
-printf(“handled event #%d.\n”, count);
+printf("Evento #%d tratado.\n", count);
 }
-
-printf(“\nThree events were handled - bye!\n\n”);
+printf("\nTres eventos foram tratados. Tchau!\n\n");
+return 0;
 }
 
 void control_C()
