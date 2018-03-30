@@ -2,10 +2,10 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <stdio.h>
-
+#include <stdlib.h> //para exit
 #define PORT 4321
 
-main(void)
+int main(void)
 /*
 ** Listing3.9b.c - Exibe os pacotes de TCP enviados por um cliente remoto (3.9.cliente)
 */
@@ -19,7 +19,7 @@ char buffer[80];
 /* create server socket to accept a connection */
 if((acc = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 {
-perror(“server: socket()”);
+perror("server: socket()");
 exit(-1);
 }
 
@@ -29,20 +29,20 @@ sock.sin_port = htons(port);
 sock.sin_family = AF_INET;
 if(bind(acc, (struct sockaddr *) &sock, len) < 0)
 {
-perror(“server: bind()”);
+perror("server: bind()");
 close(acc);
 exit(-1);
 }
 /* await connection */
 if(listen(acc, 5) < 0)
 {
-perror(“server: listen()”);
+perror("server: listen()");
 close(acc);
 exit(-1);
 }
 if((soc = accept(acc, (struct sockaddr *) &sock, &len)) < 0)
 {
-perror(“server: accept()”);
+perror("server: accept()");
 close(acc);
 exit(-1);
 }
@@ -51,10 +51,10 @@ close(acc);
 while(1)
 {
 recv(soc, buffer, sizeof(buffer), 0);
-printf(“Server: %s”, buffer);
-if(strncmp(buffer, “EXIT”, 4) == 0) /* exit request */
+printf("Server: %s", buffer);
+if(strncmp(buffer, "EXIT", 4) == 0) /* exit request */
 {
-puts(“Bye!”);
+puts("Bye!");
 close(soc);
 break;
 }

@@ -6,8 +6,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-char path[] = {“/tmp/socket3.3.6”}; /* socket name */
-main(void)
+//Bibiliotecas acrescentadas
+#include <sys/wait.h> //para wait
+#include <stdlib.h> // para exit
+
+char path[] = {"/tmp/socket3.3.6"}; /* socket name */
+int main(void)
 /*
 ** Listing3.6.c - Comunicacao UDP entre um processo e um subprocesso gerado por um fork()
 */
@@ -24,7 +28,7 @@ memset((char *) &sock, 0, sizeof(sock));
 strcpy(sock.sun_path, path);
 sock.sun_family = AF_UNIX;
 /* create child subtask */
-if((pid = fork()) == 0) >
+if((pid = fork()) == 0) 
 {
 /* publish the port number we are listening to */
 bind(fd, (struct sockaddr *) &sock, len);
@@ -32,11 +36,11 @@ bind(fd, (struct sockaddr *) &sock, len);
 while(1) {
 recvfrom(fd, buffer, sizeof(buffer), 0,
 (struct sockaddr *) &sock, &len);
-printf(“Child: %s”, buffer);
-if(strncmp(buffer, “EXIT”, 4) == 0) /* exit request */
+printf("Child: %s", buffer);
+if(strncmp(buffer, "EXIT", 4) == 0) /* exit request */
 {
 unlink(path);
-puts(“Bye!”);
+puts("Bye!");
 close(fd);
 break;
 }
@@ -48,19 +52,19 @@ exit(0);
 while(1)
 {
 sleep(1); /* response time */
-printf(“\nEnter a message: “);
-fflush(stdout); >
+printf("\nEnter a message: ");
+fflush(stdout); 
 fgets(buffer, sizeof(buffer), stdin);
 sendto(fd, buffer, strlen(buffer)+1, 0,
 (struct sockaddr *) &sock, sizeof(sock));
 
-if(strncmp(buffer, “EXIT”, 4) == 0) /* exit request */
+if(strncmp(buffer, "EXIT", 4) == 0) /* exit request */
 {
 close(fd);
 break;
 }
 }
 /* await Child exit */
-waitpid(pid);
-return; 
+waitpid(pid, NULL, WUNTRACED);
+return 0; 
 }

@@ -5,9 +5,8 @@
 #include <netdb.h>
 #include <stdio.h>
 #define PORT 5678
-main(int argc, char *argv[])
-char *argv[];
-int argc;
+#include <stdlib.h> // para exit
+int main(int argc, char *argv[])
 /*
 ** Listing3.8a.c - Envia datagramas de UDP a um servidor remoto (3.8.servidor)
 */
@@ -21,20 +20,20 @@ char buffer[80];
 /* server */
 if(argc < 2)
 {
-printf(“\n\tUsage: %s <IP_Addr>\n\n”, argv[0]);
+printf("\n\tUsage: %s <IP_Addr>\n\n", argv[0]);
 exit(-1);
 }
 /* get vitals regarding remote server */
 strncpy(buffer, argv[1], sizeof(buffer));
 if((hp = gethostbyname(buffer)) == NULL)
 {
-perror(“client: gethostbyname()”);
+perror("client: gethostbyname()");
 exit(-1);
 }
 /* establish and initialize the UDP socket */
 if((fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
 {
-perror(“client: socket()”);
+perror("client: socket()");
 exit(-1);
 }
 memset((char *) &sock, 0, sizeof(sock));
@@ -44,18 +43,18 @@ sock.sin_port = htons(port);
 /* send a message typed from interactive user to remote server */
 while(1)
 {
-printf(“\nEnter a message: “);
+printf("\nEnter a message: ");
 fflush(stdout);
 fgets(buffer, sizeof(buffer), stdin);
 sendto(fd, buffer, strlen(buffer)+1, 0,
 (struct sockaddr *) &sock, sizeof(sock));
-if(strncmp(buffer, “EXIT”, 4) == 0) /* exit request */
+if(strncmp(buffer, "EXIT", 4) == 0) /* exit request */
 {
 close(fd);
 
 break;
 }
 }
-puts(“Bye!”);
-return(0);
+puts("Bye!");
+return 0;
 }

@@ -3,7 +3,8 @@
 #include <netdb.h>
 #include <stdio.h>
 #define PORT 5678
-main()
+#include <stdlib.h> //para exit
+int main()
 /*
 ** Listing3.8b.c - Exibe datagramas de UDP enviados por um cliente remoto (3.8.cliente)
 */
@@ -17,7 +18,7 @@ char buffer[80];
 /* establish and initialize UDP socket struct */
 if((fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
 {
-perror(“server: socket()”);
+perror("server: socket()");
 exit(-1);
 }
 memset((char *) &sock, 0, sizeof(sock));
@@ -27,7 +28,7 @@ sock.sin_family = AF_INET;
 if(bind(fd, (struct sockaddr *) &sock, len) < 0)
 {
 
-perror(“server: bind()”);
+perror("server: bind()");
 close(fd);
 exit(-1);
 }
@@ -36,10 +37,10 @@ while(1)
 {
 recvfrom(fd, buffer, sizeof(buffer), 0,
 (struct sockaddr *) &sock, &len);
-printf(“Server: %s”, buffer);
-if(strncmp(buffer, “EXIT”, 4) == 0) /* exit request */
+printf("Server: %s", buffer);
+if(strncmp(buffer, "EXIT", 4) == 0) /* exit request */
 {
-puts(“Bye!”);
+puts("Bye!");
 close(fd);
 break;
 }

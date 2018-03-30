@@ -4,7 +4,11 @@
 #include <sys/sem.h>
 #include <stdio.h>
 #include <unistd.h>
-main(void)
+//Bibiliotecas acrescentadas
+#include <sys/wait.h> //para wait
+#include <stdlib.h> // para exit
+
+int main(void)
 /*
 ** Listing3.5.c - Gerenciamento simultaneo de depositos e saques utilizando semaforo
 */
@@ -58,7 +62,7 @@ buf.sem_num = 0;
 buf.sem_flg = 0;
 if((pidD = fork()) == 0) /* DEPOSITS */
 {
-/* attach parent’s shared memory */
+/* attach parent's shared memory */
 ap = (struct area *) shmat(shmid, 0, 0);
 /* note: shmid is still set correctly */
 /* handle deposit */
@@ -69,8 +73,8 @@ sleep(1);
 buf.sem_op = -1;
 semop(semid, (struct sembuf *) &buf, 1);
 
-if(ap->deposit < 0)
-break; /* exit req */
+if(ap->deposit < 0){
+break;} /* exit req */
 if(ap->deposit > 0)
 {
 /* handle the deposit */
@@ -84,9 +88,9 @@ semop(semid, (struct sembuf *) &buf, 1);
 /* child task exits normally */
 exit(0);
 }
-if((pidD = fork()) == 0) /* WITHDRAWALS */
+if((pidW = fork()) == 0) /* WITHDRAWALS */
 {
-/* attach parent’s shared memory */
+/* attach parent's shared memory */
 ap = (struct area *) shmat(shmid, 0, 0);
 /* note: shmid is still set correctly */
 /* handle withdrawal */
@@ -113,16 +117,16 @@ semop(semid, (struct sembuf *) &buf, 1);
 exit(0);
 }
 /* parent: handle deposit and withdrawal transactions */
-printf(“\n\n\n\tWELCOME TO THE FIRST INTERACTIVE BANK\n\n”);
+printf("\n\n\n\tWELCOME TO THE FIRST INTERACTIVE BANK\n\n");
 while(1)
 {
-printf(“\nEnter D for deposit, W for withdrawal: “);
+printf("\nEnter D for deposit, W for withdrawal: ");
 fflush(stdout);
 fgets(inbuf, sizeof(inbuf), stdin);
-if(inbuf[0] == ‘D’ || inbuf[0] == ‘d’)
+if(inbuf[0] == 'D' || inbuf[0] == 'd')
 {
-printf(“\tCurrent account balance is $%d\n”, ap->balance);
-printf(“\tEnter deposit amount (0 to exit): “);
+printf("\tCurrent account balance is $%d\n", ap->balance);
+printf("\tEnter deposit amount (0 to exit): ");
 fflush(stdout);
 fgets(inbuf, sizeof(inbuf), stdin);
 /* set the semaphore */
@@ -141,11 +145,11 @@ ap->deposit = amount; /* deposit it */
 buf.sem_op = 1;
 semop(semid, (struct sembuf *) &buf, 1);
 }
-else if(inbuf[0] == ‘W’ || inbuf[0] == ‘w’)
+else if(inbuf[0] == 'W' || inbuf[0] == 'w')
 {
 
-printf(“\tCurrent account balance is $%d\n”, ap->balance);
-printf(“\tEnter withdrawal amount (0 to exit): “);
+printf("\tCurrent account balance is $%d\n", ap->balance);
+printf("\tEnter withdrawal amount (0 to exit): ");
 fflush(stdout);
 fgets(inbuf, sizeof(inbuf), stdin);
 /* set the semaphore */
@@ -165,7 +169,7 @@ ap->withdrawal = amount; /* withdraw it */
 }
 else
 {
-printf(“ERROR: Insufficient funds!\n”);
+printf("ERROR: Insufficient funds!\n");
 }
 /* clear semaphore */
 buf.sem_op = 1;
@@ -173,16 +177,16 @@ semop(semid, (struct sembuf *) &buf, 1);
 }
 else
 {
-printf(“Invalid transaction code ‘%c’\n”, inbuf[0]);
+printf("Invalid transaction code '%c'\n", inbuf[0]);
 }
 }
 /* await child exits */
-waitpid(pidD);
-waitpid(pidW);
-printf(“\nYour final account balance is %d\nBye!\n\n”, ap->balance);
+waitpid(pidD,NULL,WUNTRACED);
+waitpid(pidW,NULL,WUNTRACED);
+printf("\nYour final account balance is %d\nBye!\n\n", ap->balance);
 /* remove shared memory, semaphore, and exit */
 shmctl(shmid, IPC_RMID, (struct shmid_ds *) 0);
 semctl(semid, 0, IPC_RMID, un);
 
-return;
+return 0;
 }

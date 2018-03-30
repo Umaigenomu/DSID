@@ -19,7 +19,7 @@ int main(void)
 
 int flag = (IPC_CREAT | IPC_EXCL | 0666);
 int size = sizeof(struct area);
-key_t key = ftok(".", 'a'); //0x01020304; // example 
+key_t key = 0x01020304; // example 
 int shmid; // shared memory area id 
 int pid; // child task process id 
 // get a shared memory area 
@@ -30,10 +30,6 @@ int pid; // child task process id
 }
 // attach the shared memory area 
     ap = (struct area *) shmat(shmid, 0, 0);
-/*    if ( (int *) ap == -1) {
-     printf("erro ao executar shmat\n");
-     exit(1);
-}*/
 
 // set the value of the shared memory data 
     ap->value = 0; // initialize value to zero 
